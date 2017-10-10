@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+
+<style>
+
+body {
+    min-width: 100%;
+    margin:0;
+    padding: 0;
+    overflow: hidden;
+
+}
+</style>
+
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="paper-full.js"></script>
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+
+
+    var bubbles = [];
+    var bubblesSpeed = [];
+
+
+    var octopussy = new Raster('octopussy');
+    octopussy.scale(1.1);
+    octopussy.position.x = 1000;
+    octopussy.position.y = 600;
+
+    function makeCircle() {
+        var randXPos = Math.floor(Math.random() * 220) + 1 ;
+        // bubble group positions 
+        var randInterval = Math.floor(Math.random() * 500) + 1; 
+        if (randXPos < 140) {
+            if (randXPos < 80) 
+                randXPos += 800;
+            randXPos +=randInterval; 
+        }
+        else if (randXPos > 200)
+            randXPos +=1300;
+        
+        var randSize = Math.floor(Math.random() * 100) + 1;
+        var circlePath = new Path.Circle(new Point(randXPos, 1000), randSize);
+        circlePath.fillColor = '#f0f5f7';
+        circlePath.opacity = 0.5;
+        circlePath.insertBelow(octopussy);
+        return circlePath;
+    };
+
+    var bubbleUp = false;
+    function onFrame(event)  {
+        
+        if(bubbleUp) {
+        
+            // max nr of bubbles
+            if (bubbles.length < 300) {
+                bubbles.push(makeCircle());
+                // each bubble has speed
+                bubblesSpeed.push(Math.floor(Math.random() * 8));
+            }
+            for (var i = 0; i < bubbles.length; i++  ) {
+                bubbles[i].position.y -= bubblesSpeed[i];
+                bubbles[i].scale(0.98);
+                /* if bubble reached top of screen or if bubble is too small, remove bubble - no need foar extra bubbles */
+                if (bubbles[i].position.y < 10 || checkBubbleSize(bubbles[i])) {
+                    //console.log(bubbles[i].position.y);
+                    bubbles[i].remove();
+                    bubbles.splice(i, 1);
+                    bubblesSpeed.splice(i, 1);
+                } 
+            }
+        }
+    }
+
+    function onMouseDown(event) {
+        bubbleUp = !bubbleUp;
+    }
+
+
+    function checkBubbleSize(aBubble) {
+         if (aBubble.bounds.width < 5)  {
+            return true;
+            } else
+                return false;
+    }
+
+
+
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-71101550-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+<body>
+    <canvas id="myCanvas" resize style="background:url('octopussy_background.png') no-repeat;">
+        <img src="octopussy.png" id="octopussy"/>
+    </canvas>
+</body>
